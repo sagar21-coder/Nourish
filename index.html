@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nourish - Healthy Food Habits</title>
+    <meta
+      name="description"
+      content="Nourish helps you build healthy food habits with BMI & TDEE calculators, a personalized diet planner, and practical tips."
+    />
+    <meta name="theme-color" content="#667eea" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #ffffff;
+        --bg-alt: #f8f9fa;
+        --text: #333333;
+        --subtle: #666666;
+        --card: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.1);
+        --primary-1: #667eea;
+        --primary-2: #764ba2;
+        --ring: rgba(102, 126, 234, 0.1);
+      }
+
+      /* Dark mode tokens */
+      .dark {
+        --bg: #0f1222;
+        --bg-alt: #0b0e1a;
+        --text: #eef2ff;
+        --subtle: #c7c9d3;
+        --card: #14182b;
+        --shadow: rgba(0, 0, 0, 0.35);
+        --ring: rgba(102, 126, 234, 0.25);
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) fixed;
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      .surface {
+        background: var(--bg);
+      }
+
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: color-mix(in oklab, var(--bg) 92%, transparent);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 4px 20px var(--shadow);
+        transition: all 0.3s ease;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-left {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.25rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        color: #667eea;
+        outline: none;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        width: 40px;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background: var(--card);
+        box-shadow: 0 4px 14px var(--shadow);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.3s ease;
+      }
+
+      .icon-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px var(--shadow);
+      }
+
+      .icon-btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px var(--ring);
+      }
+
+      .menu-toggle {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+      }
+
+      .menu-toggle span {
+        width: 25px;
+        height: 3px;
+        background: var(--text);
+        margin: 3px 0;
+        transition: 0.3s;
+      }
+
+      .hero {
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        top: -100px;
+        right: -100px;
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        bottom: -50px;
+        left: -50px;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.2rem, 4.5vw, 4rem);
+        color: white;
+        margin-bottom: 1rem;
+        animation: fadeInUp 1s ease;
+        line-height: 1.1;
+      }
+
+      .hero p {
+        font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+        animation: fadeInUp 1s ease 0.2s backwards;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .cta-button {
+        background: white;
+        color: #667eea;
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeInUp 1s ease 0.4s backwards;
+      }
+
+      .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .section {
+        padding: 5rem 2rem;
+      }
+
+      .surface {
+        background: var(--bg);
+      }
+
+      .surface-alt {
+        background: var(--bg-alt);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.2rem;
+        margin-bottom: 3rem;
+        color: var(--text);
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 1rem auto;
+        border-radius: 2px;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px var(--shadow);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .card:hover,
+      .card:focus-within {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px var(--shadow);
+      }
+
+      .card-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+        color: #667eea;
+      }
+
+      .card p {
+        color: var(--subtle);
+        line-height: 1.6;
+      }
+
+      .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .tip-item {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+      }
+
+      .tip-item:hover {
+        transform: scale(1.05);
+      }
+
+      .tip-item h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .bmi-calculator {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 4rem;
+        align-items: start;
+      }
+
+      .bmi-inputs,
+      .bmr-inputs {
+        background: var(--card);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow);
+      }
+
+      .bmi-inputs h3,
+      .bmr-inputs h3 {
+        color: #667eea;
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+        text-align: center;
+      }
+
+      .bmi-input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .form-row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text);
+        font-size: 1rem;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        background: var(--bg);
+        color: var(--text);
+        transition: all 0.3s ease;
+      }
+
+      .dark .form-group input,
+      .dark .form-group select {
+        border-color: #27314a;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px var(--ring);
+      }
+
+      .inline {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .calculate-btn,
+      .generate-btn,
+      .secondary-btn {
+        padding: 1rem 1.25rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 0.25rem;
+      }
+
+      .secondary-btn {
+        background: transparent;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .calculate-btn:hover,
+      .generate-btn:hover,
+      .secondary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.35);
+      }
+
+      .calculate-btn:disabled,
+      .generate-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .bmi-result {
+        background: var(--card);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow);
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bmi-placeholder {
+        text-align: center;
+        color: #999;
+      }
+
+      .bmi-display {
+        text-align: center;
+        width: 100%;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .bmi-value {
+        font-size: 3rem;
+        font-weight: bold;
+        margin: 1rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .bmi-category {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .bmi-description {
+        color: var(--subtle);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--bg-alt);
+        border-radius: 12px;
+      }
+
+      .bmi-range {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+      }
+
+      .range-item {
+        padding: 0.7rem;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .range-underweight {
+        background: #3b82f6;
+        color: white;
+      }
+      .range-normal {
+        background: #10b981;
+        color: white;
+      }
+      .range-overweight {
+        background: #f59e0b;
+        color: white;
+      }
+      .range-obese {
+        background: #ef4444;
+        color: white;
+      }
+
+      .range-item.active {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 0 0 6px currentColor;
+        transform: scale(1.05);
+      }
+
+      .planner-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+      }
+
+      .planner-form,
+      .plan-display {
+        background: var(--card);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow);
+      }
+
+      .plan-display {
+        min-height: 420px;
+      }
+
+      .placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #999;
+        text-align: center;
+        padding: 3rem;
+      }
+
+      .placeholder-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .meal-plan {
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .plan-header {
+        display: grid;
+        gap: 0.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .dark .plan-header {
+        border-color: #27314a;
+      }
+
+      .plan-header h3 {
+        color: #667eea;
+        font-size: 1.5rem;
+      }
+
+      .plan-meta {
+        color: var(--subtle);
+        font-size: 0.95rem;
+      }
+
+      .meal-card {
+        background: linear-gradient(
+          135deg,
+          var(--bg-alt) 0%,
+          color-mix(in oklab, var(--bg-alt) 75%, #e9ecef) 100%
+        );
+        padding: 1.25rem;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+      }
+
+      .meal-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 5px 20px var(--shadow);
+      }
+
+      .meal-card h4 {
+        color: #667eea;
+        font-size: 1.15rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .meal-card ul {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .meal-card li {
+        color: var(--text);
+        margin-bottom: 0.45rem;
+        padding-left: 1.5rem;
+        position: relative;
+      }
+
+      .meal-card li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      .nutrition-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.25rem;
+        border-radius: 15px;
+        margin-top: 1.25rem;
+      }
+
+      .nutrition-summary h4 {
+        margin-bottom: 0.75rem;
+        font-size: 1.15rem;
+      }
+
+      .nutrition-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        text-align: center;
+      }
+
+      .nutrition-item {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.9rem;
+        border-radius: 10px;
+      }
+
+      .nutrition-item strong {
+        display: block;
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .nutrition-item span {
+        font-size: 0.8rem;
+        opacity: 0.95;
+      }
+
+      /* Mindfulness (Yoga & Meditation) */
+      .mindfulness-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 2rem;
+      }
+
+      .practice-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 1.25rem;
+        box-shadow: 0 8px 24px var(--shadow);
+        border-left: 4px solid #764ba2;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+      }
+
+      .practice-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 34px var(--shadow);
+      }
+
+      .practice-card h4 {
+        color: #764ba2;
+        margin-bottom: 0.5rem;
+        font-size: 1.15rem;
+      }
+
+      .practice-meta {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin: 0.5rem 0 0.75rem 0;
+      }
+
+      .chip {
+        background: color-mix(in oklab, #764ba2 18%, var(--bg));
+        color: #764ba2;
+        border: 1px solid color-mix(in oklab, #764ba2 30%, transparent);
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+      }
+
+      .practice-card ul {
+        padding-left: 1.1rem;
+        color: var(--subtle);
+      }
+
+      .practice-card li {
+        margin: 0.25rem 0;
+      }
+
+      .breath-widget {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px var(--shadow);
+        display: grid;
+        gap: 0.9rem;
+        justify-items: center;
+      }
+
+      .breath-circle {
+        height: 160px;
+        width: 160px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 30% 30%,
+          color-mix(in oklab, #667eea 35%, #764ba2),
+          #764ba2
+        );
+        box-shadow: 0 12px 28px var(--shadow),
+          inset 0 0 0 6px rgba(255, 255, 255, 0.15);
+        transform: scale(1);
+        transition: transform 3s ease-in-out;
+      }
+
+      .breath-instruction {
+        font-weight: 600;
+        color: #667eea;
+        min-height: 1.4em;
+      }
+
+      .breath-stats {
+        color: var(--subtle);
+        font-size: 0.9rem;
+      }
+
+      .breath-controls {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .select {
+        padding: 0.6rem 0.75rem;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .dark .select {
+        border-color: #27314a;
+      }
+
+      /* Journal */
+      .journal-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+      }
+
+      .journal-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 1.25rem;
+        box-shadow: 0 10px 28px var(--shadow);
+      }
+
+      .journal-card h4 {
+        color: #667eea;
+        margin-bottom: 0.75rem;
+      }
+
+      .meal-inputs {
+        display: grid;
+        grid-template-columns: 1fr 120px auto;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .meal-inputs input {
+        padding: 0.7rem 0.8rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .dark .meal-inputs input {
+        border-color: #27314a;
+      }
+
+      .meal-list {
+        list-style: none;
+        margin-top: 0.25rem;
+      }
+
+      .meal-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.6rem;
+        border: 1px solid #e2e8f0;
+        background: var(--bg);
+        border-radius: 10px;
+        margin-bottom: 0.45rem;
+      }
+
+      .dark .meal-item {
+        border-color: #27314a;
+      }
+
+      .meal-item .meta {
+        color: var(--subtle);
+        font-size: 0.9rem;
+      }
+
+      .delete-btn {
+        background: transparent;
+        border: 1px solid #ef4444;
+        color: #ef4444;
+        padding: 0.35rem 0.6rem;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px dashed #e2e8f0;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        color: var(--subtle);
+      }
+
+      .journal-toolbar {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background: color-mix(in oklab, #667eea 18%, var(--bg));
+        border: 1px solid color-mix(in oklab, #667eea 25%, transparent);
+        color: #667eea;
+        border-radius: 999px;
+        font-size: 0.85rem;
+      }
+
+      .toolbar-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        justify-content: center;
+      }
+
+      .footer {
+        background: #2d3748;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .back-to-top {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        height: 48px;
+        width: 48px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 1.25rem;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 10px 25px var(--shadow);
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px);
+        transition: all 0.25s ease;
+        z-index: 999;
+      }
+
+      .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .nutrition-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background: var(--bg);
+          flex-direction: column;
+          padding: 1rem;
+          box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .nav-links.active {
+          display: flex;
+        }
+
+        .menu-toggle {
+          display: flex;
+        }
+
+        .hero h1 {
+          font-size: 2.4rem;
+        }
+
+        .hero p {
+          font-size: 1.1rem;
+        }
+
+        .bmi-calculator {
+          grid-template-columns: 1fr;
+        }
+
+        .bmi-input-row {
+          grid-template-columns: 1fr;
+        }
+
+        .form-row-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .planner-container {
+          grid-template-columns: 1fr;
+        }
+
+        .nutrition-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .mindfulness-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .journal-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        .navbar,
+        .hero,
+        .toolbar,
+        .menu-toggle,
+        .back-to-top {
+          display: none !important;
+        }
+        body {
+          background: white;
+          color: black;
+        }
+        .plan-display,
+        .planner-form {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="surface">
+    <nav class="navbar" aria-label="Main navigation">
+      <div class="nav-left">
+        <div class="logo" aria-label="Nourish logo">🍃 Nourish</div>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#habits">Habits</a></li>
+          <li><a href="#planner">Planner</a></li>
+          <li><a href="#journal">Today</a></li>
+          <li><a href="#mindfulness">Mindfulness</a></li>
+          <li><a href="#tips">Tips</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="toolbar">
+        <button
+          class="icon-btn"
+          id="toggleTheme"
+          title="Toggle dark mode"
+          aria-label="Toggle dark mode"
+        >
+          🌙
+        </button>
+        <div class="menu-toggle" id="menuToggle" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <h1 id="hero-title">Transform Your Life</h1>
+        <p>Build healthy food habits that last a lifetime</p>
+        <button class="cta-button" onclick="scrollToSection('habits')">
+          Start Your Journey
+        </button>
+      </div>
+    </section>
+
+    <section class="section surface" id="habits" aria-labelledby="habits-title">
+      <div class="container">
+        <h2 class="section-title" id="habits-title">Essential Food Habits</h2>
+        <div class="cards">
+          <div class="card" tabindex="0">
+            <div class="card-icon" aria-hidden="true">🥗</div>
+            <h3>Balanced Diet</h3>
+            <p>
+              Include a variety of fruits, vegetables, whole grains, lean
+              proteins, and healthy fats in your daily meals for optimal
+              nutrition.
+            </p>
+          </div>
+          <div class="card" tabindex="0">
+            <div class="card-icon" aria-hidden="true">💧</div>
+            <h3>Stay Hydrated</h3>
+            <p>
+              Drink 8-10 glasses of water daily. Proper hydration boosts
+              metabolism, improves digestion, and keeps your skin glowing.
+            </p>
+          </div>
+          <div class="card" tabindex="0">
+            <div class="card-icon" aria-hidden="true">⏰</div>
+            <h3>Regular Meals</h3>
+            <p>
+              Eat at consistent times each day. Regular meal schedules help
+              regulate metabolism and maintain steady energy levels.
+            </p>
+          </div>
+          <div class="card" tabindex="0">
+            <div class="card-icon" aria-hidden="true">🧘</div>
+            <h3>Mindful Eating</h3>
+            <p>
+              Pay attention to your food, eat slowly, and savor each bite. This
+              improves digestion and prevents overeating.
+            </p>
+          </div>
+          <div class="card" tabindex="0">
+            <div class="card-icon" aria-hidden="true">🍎</div>
+            <h3>Portion Control</h3>
+            <p>
+              Use smaller plates, listen to hunger cues, and avoid eating until
+              you're overly full. Quality over quantity matters.
+            </p>
+          </div>
+          <div class="card" tabindex="0">
+            <div class="card-icon" aria-hidden="true">🌙</div>
+            <h3>Light Dinner</h3>
+            <p>
+              Have your last meal 2-3 hours before bedtime. A lighter dinner
+              promotes better sleep and healthy digestion.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section surface-alt"
+      id="planner"
+      aria-labelledby="planner-title"
+    >
+      <div class="container">
+        <h2 class="section-title" id="planner-title">
+          BMI, BMR/TDEE & Diet Planner
+        </h2>
+
+        <div class="bmi-calculator">
+          <!-- Left: Inputs -->
+          <div class="bmi-inputs" aria-labelledby="bmi-title">
+            <h3 id="bmi-title">Calculate Your BMI</h3>
+            <div
+              class="inline"
+              style="justify-content: center; margin-bottom: 0.75rem"
+            >
+              <label class="inline" for="unitSystem">Units:</label>
+              <select id="unitSystem" aria-label="Unit system">
+                <option value="metric">Metric (kg, cm)</option>
+                <option value="imperial">Imperial (lb, in)</option>
+              </select>
+            </div>
+            <div class="bmi-input-row">
+              <div class="form-group">
+                <label id="labelWeight">⚖️ Weight (kg)</label>
+                <input
+                  type="number"
+                  id="weight"
+                  placeholder="Enter weight"
+                  min="1"
+                  step="0.1"
+                  inputmode="decimal"
+                />
+              </div>
+              <div class="form-group">
+                <label id="labelHeight">📏 Height (cm)</label>
+                <input
+                  type="number"
+                  id="height"
+                  placeholder="Enter height"
+                  min="1"
+                  step="0.1"
+                  inputmode="decimal"
+                />
+              </div>
+              <button
+                class="calculate-btn"
+                id="btnBMI"
+                onclick="calculateBMI()"
+              >
+                Calculate BMI
+              </button>
+            </div>
+
+            <div
+              class="bmr-inputs"
+              style="margin-top: 1.5rem"
+              aria-labelledby="bmr-title"
+            >
+              <h3 id="bmr-title">Calculate Your BMR & TDEE</h3>
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label for="age">🎂 Age</label>
+                  <input
+                    type="number"
+                    id="age"
+                    placeholder="Years"
+                    min="10"
+                    max="100"
+                    inputmode="numeric"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="sex">🧬 Sex</label>
+                  <select id="sex">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="activity">🏃 Activity Level</label>
+                  <select id="activity">
+                    <option value="sedentary">
+                      Sedentary (little/no exercise)
+                    </option>
+                    <option value="light">Light (1-3 days/week)</option>
+                    <option value="moderate">Moderate (3-5 days/week)</option>
+                    <option value="active">Active (6-7 days/week)</option>
+                  </select>
+                </div>
+              </div>
+              <button
+                class="calculate-btn"
+                id="btnTDEE"
+                onclick="calculateTDEE()"
+              >
+                Calculate TDEE
+              </button>
+              <p
+                id="tdeeOutput"
+                style="
+                  margin-top: 0.75rem;
+                  text-align: center;
+                  color: var(--subtle);
+                "
+              ></p>
+            </div>
+          </div>
+
+          <!-- Right: Result -->
+          <div class="bmi-result" id="bmiResult" aria-live="polite">
+            <div class="bmi-placeholder">
+              <p>Enter your details to calculate BMI & TDEE</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diet Planner -->
+        <h3
+          style="
+            text-align: center;
+            margin: 2.25rem 0 1.25rem 0;
+            font-size: 1.6rem;
+            color: var(--text);
+          "
+        >
+          Personalized Diet Planner
+        </h3>
+        <div class="planner-container">
+          <div class="planner-form" aria-labelledby="planner-form-title">
+            <h3
+              id="planner-form-title"
+              style="text-align: center; color: #667eea; margin-bottom: 1rem"
+            >
+              Plan Settings
+            </h3>
+            <div class="form-group">
+              <label for="goal">🎯 Goal</label>
+              <select id="goal">
+                <option value="weight-loss">Weight Loss</option>
+                <option value="muscle-gain">Muscle Gain</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="healthy-lifestyle">Healthy Lifestyle</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="preference">🥗 Diet Preference</label>
+              <select id="preference">
+                <option value="balanced">Balanced</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="keto">Keto</option>
+                <option value="mediterranean">Mediterranean</option>
+              </select>
+            </div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="mealsPerDay">🍽️ Meals per day</label>
+                <select id="mealsPerDay">
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="includeSnack">🥤 Include snack</label>
+                <select id="includeSnack">
+                  <option value="yes" selected>Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="calorieOverride"
+                  >🔥 Target Calories (optional)</label
+                >
+                <input
+                  type="number"
+                  id="calorieOverride"
+                  placeholder="e.g. 2200"
+                  min="1000"
+                  max="5000"
+                  step="50"
+                />
+              </div>
+            </div>
+            <div
+              class="inline"
+              style="justify-content: space-between; flex-wrap: wrap"
+            >
+              <button
+                class="generate-btn"
+                id="btnGenerate"
+                onclick="generatePlan()"
+              >
+                Generate My Plan
+              </button>
+              <div class="toolbar-actions">
+                <button class="secondary-btn" onclick="printPlan()">
+                  Print / Save PDF
+                </button>
+                <button class="secondary-btn" onclick="sharePlan()">
+                  Share
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="plan-display" id="planDisplay">
+            <div class="placeholder">
+              <div class="placeholder-icon" aria-hidden="true">📋</div>
+              <p>
+                Select your preferences and click "Generate My Plan" to see your
+                personalized diet plan
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section surface-alt"
+      id="journal"
+      aria-labelledby="journal-title"
+    >
+      <div class="container">
+        <h2 class="section-title" id="journal-title">Today’s Diet Journal</h2>
+        <div class="journal-toolbar">
+          <div class="inline" style="gap: 0.75rem">
+            <label
+              for="journalDate"
+              style="font-weight: 600; color: var(--text)"
+              >Date</label
+            >
+            <input type="date" id="journalDate" class="select" />
+          </div>
+          <div class="inline" style="gap: 0.5rem">
+            <span class="badge" id="dailyTotalBadge">Total: 0 kcal</span>
+            <button class="secondary-btn" id="clearDayBtn">Clear Day</button>
+          </div>
+        </div>
+        <div class="journal-grid">
+          <div class="journal-card" data-meal="breakfast">
+            <h4>🌅 Breakfast</h4>
+            <div class="meal-inputs">
+              <input
+                type="text"
+                placeholder="What did/will you eat?"
+                aria-label="Breakfast item"
+              />
+              <input
+                type="number"
+                placeholder="kcal"
+                aria-label="Breakfast calories"
+                min="0"
+                step="1"
+              />
+              <button class="generate-btn add-meal">Add</button>
+            </div>
+            <ul class="meal-list"></ul>
+            <div class="total-row">
+              <span>Meal total</span><strong class="meal-total">0 kcal</strong>
+            </div>
+          </div>
+          <div class="journal-card" data-meal="lunch">
+            <h4>🍽️ Lunch</h4>
+            <div class="meal-inputs">
+              <input
+                type="text"
+                placeholder="What did/will you eat?"
+                aria-label="Lunch item"
+              />
+              <input
+                type="number"
+                placeholder="kcal"
+                aria-label="Lunch calories"
+                min="0"
+                step="1"
+              />
+              <button class="generate-btn add-meal">Add</button>
+            </div>
+            <ul class="meal-list"></ul>
+            <div class="total-row">
+              <span>Meal total</span><strong class="meal-total">0 kcal</strong>
+            </div>
+          </div>
+          <div class="journal-card" data-meal="snack">
+            <h4>🥤 Snack</h4>
+            <div class="meal-inputs">
+              <input
+                type="text"
+                placeholder="What did/will you eat?"
+                aria-label="Snack item"
+              />
+              <input
+                type="number"
+                placeholder="kcal"
+                aria-label="Snack calories"
+                min="0"
+                step="1"
+              />
+              <button class="generate-btn add-meal">Add</button>
+            </div>
+            <ul class="meal-list"></ul>
+            <div class="total-row">
+              <span>Meal total</span><strong class="meal-total">0 kcal</strong>
+            </div>
+          </div>
+          <div class="journal-card" data-meal="dinner">
+            <h4>🌙 Dinner</h4>
+            <div class="meal-inputs">
+              <input
+                type="text"
+                placeholder="What did/will you eat?"
+                aria-label="Dinner item"
+              />
+              <input
+                type="number"
+                placeholder="kcal"
+                aria-label="Dinner calories"
+                min="0"
+                step="1"
+              />
+              <button class="generate-btn add-meal">Add</button>
+            </div>
+            <ul class="meal-list"></ul>
+            <div class="total-row">
+              <span>Meal total</span><strong class="meal-total">0 kcal</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section surface"
+      id="mindfulness"
+      aria-labelledby="mind-title"
+    >
+      <div class="container">
+        <h2 class="section-title" id="mind-title">Yoga & Meditation</h2>
+        <div class="mindfulness-grid">
+          <div>
+            <div class="practice-card">
+              <h4>🪷 Easy Yoga Asanas (Beginner)</h4>
+              <div class="practice-meta">
+                <span class="chip">Beginner</span>
+                <span class="chip">Stretch</span>
+                <span class="chip">Relax</span>
+              </div>
+              <ul>
+                <li>
+                  <strong>Mountain (Tadasana)</strong> — Stand tall, steady
+                  breath (30–60s)
+                </li>
+                <li>
+                  <strong>Cat–Cow</strong> — Spine mobilization with breath (1–2
+                  min)
+                </li>
+                <li>
+                  <strong>Child’s Pose (Balasana)</strong> — Gentle back/hip
+                  release (1–2 min)
+                </li>
+                <li>
+                  <strong>Cobra (Bhujangasana)</strong> — Light back bend, open
+                  chest (5–8 breaths)
+                </li>
+                <li>
+                  <strong>Bridge (Setu Bandhasana)</strong> — Glutes/core,
+                  support lower back (5–8 breaths)
+                </li>
+                <li>
+                  <strong>Seated Forward Fold</strong> — Hamstring + back
+                  stretch (45–90s)
+                </li>
+              </ul>
+            </div>
+            <div class="practice-card" style="margin-top: 1rem">
+              <h4>🪑 Chair-Friendly Mini Flow</h4>
+              <div class="practice-meta">
+                <span class="chip">Office</span>
+                <span class="chip">5 min</span>
+              </div>
+              <ul>
+                <li>
+                  <strong>Neck rolls</strong> — slow circles (3 each side)
+                </li>
+                <li>
+                  <strong>Seated cat–cow</strong> — arch/round with breath (6–8
+                  reps)
+                </li>
+                <li>
+                  <strong>Seated twist</strong> — gentle wring (30s each side)
+                </li>
+                <li>
+                  <strong>Ankle pumps</strong> — boost circulation (20 reps)
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="breath-widget" aria-labelledby="breath-title">
+              <h4 id="breath-title" style="color: #667eea">Guided Breathing</h4>
+              <div
+                class="breath-circle"
+                id="breathCircle"
+                aria-hidden="true"
+              ></div>
+              <div class="breath-instruction" id="breathInstruction">
+                Pick an easy technique and press Start
+              </div>
+              <div class="breath-controls">
+                <button
+                  class="secondary-btn breath-mode"
+                  data-pattern="2-4"
+                  title="Inhale 2s, Exhale 4s"
+                >
+                  2-4 Relax
+                </button>
+                <button
+                  class="secondary-btn breath-mode"
+                  data-pattern="3-3"
+                  title="Inhale 3s, Exhale 3s"
+                >
+                  3-3 Calm
+                </button>
+                <button
+                  class="secondary-btn breath-mode"
+                  data-pattern="5-5"
+                  title="Inhale 5s, Exhale 5s"
+                >
+                  5-5 Equal
+                </button>
+                <button class="calculate-btn" id="breathStart">Start</button>
+                <button class="secondary-btn" id="breathStop">Stop</button>
+              </div>
+              <div class="breath-stats" id="breathStats">Session: 0 cycles</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section surface" id="tips" aria-labelledby="tips-title">
+      <div class="container">
+        <h2 class="section-title" id="tips-title">Quick Health Tips</h2>
+        <div class="tips-grid">
+          <div class="tip-item">
+            <h4>🌅 Start Right</h4>
+            <p>Begin your day with a glass of warm water and lemon</p>
+          </div>
+          <div class="tip-item">
+            <h4>🥜 Smart Snacking</h4>
+            <p>Choose nuts, fruits, or yogurt over processed snacks</p>
+          </div>
+          <div class="tip-item">
+            <h4>🍳 Protein Power</h4>
+            <p>Include protein in every meal to stay fuller longer</p>
+          </div>
+          <div class="tip-item">
+            <h4>🌈 Eat Colors</h4>
+            <p>More colorful produce means more nutrients and antioxidants</p>
+          </div>
+          <div class="tip-item">
+            <h4>📱 Limit Distractions</h4>
+            <p>Put away devices during meals to focus on eating</p>
+          </div>
+          <div class="tip-item">
+            <h4>🥘 Meal Prep</h4>
+            <p>Plan and prepare meals ahead to avoid unhealthy choices</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer
+      class="footer surface-alt"
+      id="contact"
+      aria-labelledby="contact-title"
+    >
+      <div class="container">
+        <h3 id="contact-title">Ready to Transform Your Health?</h3>
+        <p>Start building better food habits today!</p>
+        <p style="margin-top: 1.25rem; opacity: 0.8">
+          © <span id="year"></span> Nourish. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+      ↑
+    </button>
+
+    <script>
+      // DOM helpers
+      const $ = (id) => document.getElementById(id);
+
+      // Theme handling
+      const THEME_KEY = "nourish_theme";
+      const PREFS_KEY = "nourish_prefs";
+
+      function applyTheme(theme) {
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
+          document.body.classList.add("dark");
+          $("toggleTheme").textContent = "☀️";
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", "#0f1222");
+        } else {
+          document.documentElement.classList.remove("dark");
+          document.body.classList.remove("dark");
+          $("toggleTheme").textContent = "🌙";
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", "#667eea");
+        }
+      }
+
+      function getStoredPrefs() {
+        try {
+          const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+          return prefs || {};
+        } catch {
+          return {};
+        }
+      }
+
+      function setStoredPrefs(prefs) {
+        localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+      }
+
+      // Initialize theme
+      const storedTheme =
+        localStorage.getItem(THEME_KEY) ||
+        (window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+      applyTheme(storedTheme);
+
+      $("toggleTheme").addEventListener("click", () => {
+        const newTheme = document.documentElement.classList.contains("dark")
+          ? "light"
+          : "dark";
+        localStorage.setItem(THEME_KEY, newTheme);
+        applyTheme(newTheme);
+      });
+
+      // Mobile menu toggle
+      const menuToggle = $("menuToggle");
+      const navLinks = $("navLinks");
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Smooth scrolling
+      function scrollToSection(id) {
+        document
+          .getElementById(id)
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      window.scrollToSection = scrollToSection;
+
+      // Close mobile menu when clicking a link
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          navLinks.classList.remove("active");
+        });
+      });
+
+      // Navbar scroll effect
+      window.addEventListener("scroll", () => {
+        const navbar = document.querySelector(".navbar");
+        if (window.scrollY > 50) {
+          navbar.style.padding = "0.5rem 2rem";
+        } else {
+          navbar.style.padding = "1rem 2rem";
+        }
+      });
+
+      // Card animation on scroll
+      const animatedCards = document.querySelectorAll(".card, .tip-item");
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "0";
+            entry.target.style.transform = "translateY(30px)";
+            setTimeout(() => {
+              entry.target.style.transition = "all 0.6s ease";
+              entry.target.style.opacity = "1";
+              entry.target.style.transform = "translateY(0)";
+            }, 100);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+      animatedCards.forEach((card) => observer.observe(card));
+
+      // Back to top button
+      const backToTop = $("backToTop");
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 600) {
+          backToTop.classList.add("show");
+        } else {
+          backToTop.classList.remove("show");
+        }
+      });
+      backToTop.addEventListener("click", () =>
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      );
+
+      // Unit switching helpers
+      function kgToLb(kg) {
+        return kg * 2.2046226218;
+      }
+      function lbToKg(lb) {
+        return lb / 2.2046226218;
+      }
+      function cmToIn(cm) {
+        return cm * 0.3937007874;
+      }
+      function inToCm(inch) {
+        return inch / 0.3937007874;
+      }
+
+      const unitSystemEl = $("unitSystem");
+      unitSystemEl.addEventListener("change", () => {
+        const system = unitSystemEl.value;
+        const w = parseFloat($("weight").value);
+        const h = parseFloat($("height").value);
+        if (system === "imperial") {
+          $("labelWeight").textContent = "⚖️ Weight (lb)";
+          $("labelHeight").textContent = "📏 Height (in)";
+          if (!isNaN(w)) $("weight").value = Math.round(kgToLb(w) * 10) / 10;
+          if (!isNaN(h)) $("height").value = Math.round(cmToIn(h) * 10) / 10;
+        } else {
+          $("labelWeight").textContent = "⚖️ Weight (kg)";
+          $("labelHeight").textContent = "📏 Height (cm)";
+          if (!isNaN(w)) $("weight").value = Math.round(lbToKg(w) * 10) / 10;
+          if (!isNaN(h)) $("height").value = Math.round(inToCm(h) * 10) / 10;
+        }
+        persistPrefs();
+      });
+
+      // BMI Calculator
+      function calculateBMI() {
+        const weightRaw = parseFloat($("weight").value);
+        const heightRaw = parseFloat($("height").value);
+        if (!weightRaw || !heightRaw || weightRaw <= 0 || heightRaw <= 0) {
+          alert("Please enter valid weight and height values");
+          return;
+        }
+        const useImperial = unitSystemEl.value === "imperial";
+        const weightKg = useImperial ? lbToKg(weightRaw) : weightRaw;
+        const heightCm = useImperial ? inToCm(heightRaw) : heightRaw;
+        const heightM = heightCm / 100;
+        const bmi = weightKg / (heightM * heightM);
+
+        let category, color, description, categoryClass;
+        if (bmi < 18.5) {
+          category = "Underweight";
+          color = "#3b82f6";
+          categoryClass = "underweight";
+          description =
+            "Your BMI indicates you are underweight. Consider consulting with a healthcare provider about healthy weight gain strategies.";
+        } else if (bmi < 25) {
+          category = "Normal Weight";
+          color = "#10b981";
+          categoryClass = "normal";
+          description =
+            "Great! Your BMI is in the healthy range. Maintain your current lifestyle with a balanced diet and regular exercise.";
+        } else if (bmi < 30) {
+          category = "Overweight";
+          color = "#f59e0b";
+          categoryClass = "overweight";
+          description =
+            "Your BMI indicates you are overweight. Consider adopting a balanced diet and increasing physical activity.";
+        } else {
+          category = "Obese";
+          color = "#ef4444";
+          categoryClass = "obese";
+          description =
+            "Your BMI indicates obesity. Consult with a healthcare provider to develop a personalized health plan.";
+        }
+
+        const resultHTML = `
+                <div class="bmi-display">
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">Your BMI Result</h4>
+                    <div class="bmi-value">${bmi.toFixed(1)}</div>
+                    <div class="bmi-category" style="color: ${color};">${category}</div>
+                    <div class="bmi-range">
+                        <div class="range-item range-underweight ${
+                          categoryClass === "underweight" ? "active" : ""
+                        }">
+                            <div>Underweight</div>
+                            <div style="font-size: 0.75rem; margin-top: 0.3rem;">&lt; 18.5</div>
+                        </div>
+                        <div class="range-item range-normal ${
+                          categoryClass === "normal" ? "active" : ""
+                        }">
+                            <div>Normal</div>
+                            <div style="font-size: 0.75rem; margin-top: 0.3rem;">18.5 - 24.9</div>
+                        </div>
+                        <div class="range-item range-overweight ${
+                          categoryClass === "overweight" ? "active" : ""
+                        }">
+                            <div>Overweight</div>
+                            <div style="font-size: 0.75rem; margin-top: 0.3rem;">25 - 29.9</div>
+                        </div>
+                        <div class="range-item range-obese ${
+                          categoryClass === "obese" ? "active" : ""
+                        }">
+                            <div>Obese</div>
+                            <div style="font-size: 0.75rem; margin-top: 0.3rem;">&ge; 30</div>
+                        </div>
+                    </div>
+                    <div class="bmi-description">${description}</div>
+                </div>
+            `;
+        $("bmiResult").innerHTML = resultHTML;
+        persistPrefs();
+      }
+      window.calculateBMI = calculateBMI;
+
+      // Allow Enter key to calculate BMI
+      document.addEventListener("DOMContentLoaded", function () {
+        ["weight", "height"].forEach((id) => {
+          const element = $(id);
+          if (element) {
+            element.addEventListener("keypress", function (e) {
+              if (e.key === "Enter") {
+                calculateBMI();
+              }
+            });
+          }
+        });
+      });
+
+      // TDEE calculation (Mifflin-St Jeor)
+      function calculateBMR({ sex, weightKg, heightCm, ageYears }) {
+        // Mifflin-St Jeor: BMR = 10W + 6.25H - 5A + s (s=5 male, -161 female)
+        const base = 10 * weightKg + 6.25 * heightCm - 5 * ageYears;
+        return Math.round(base + (sex === "male" ? 5 : -161));
+      }
+
+      const activityFactor = {
+        sedentary: 1.2,
+        light: 1.375,
+        moderate: 1.55,
+        active: 1.725,
+      };
+
+      function calculateTDEE() {
+        const useImperial = unitSystemEl.value === "imperial";
+        const weightRaw = parseFloat($("weight").value);
+        const heightRaw = parseFloat($("height").value);
+        const age = parseInt($("age").value, 10);
+        const sex = $("sex").value;
+        const activity = $("activity").value;
+        if (!weightRaw || !heightRaw || !age || age < 10) {
+          alert(
+            "Please enter valid weight, height and age before calculating TDEE."
+          );
+          return;
+        }
+        const weightKg = useImperial ? lbToKg(weightRaw) : weightRaw;
+        const heightCm = useImperial ? inToCm(heightRaw) : heightRaw;
+        const bmr = calculateBMR({ sex, weightKg, heightCm, ageYears: age });
+        const tdee = Math.round(bmr * (activityFactor[activity] || 1.2));
+        $(
+          "tdeeOutput"
+        ).textContent = `BMR: ${bmr} kcal/day • TDEE: ${tdee} kcal/day`;
+        // Store latest TDEE to feed into planner if no override
+        const prefs = getStoredPrefs();
+        prefs.lastTDEE = tdee;
+        setStoredPrefs(prefs);
+        persistPrefs();
+      }
+      window.calculateTDEE = calculateTDEE;
+
+      // Diet Plan Generator (enhanced)
+      function generatePlan() {
+        const goal = $("goal").value;
+        const activity = $("activity").value;
+        const preference = $("preference").value;
+        const calorieOverride = parseInt(
+          ($("calorieOverride").value || "").trim(),
+          10
+        );
+        const stored = getStoredPrefs();
+
+        // Base plans (original extended, preserved as much as possible)
+        const plans = {
+          "weight-loss": {
+            balanced: {
+              breakfast: [
+                "Oatmeal with berries and almonds",
+                "Green tea",
+                "One boiled egg",
+              ],
+              lunch: [
+                "Grilled chicken breast",
+                "Quinoa salad with mixed vegetables",
+                "Lemon water",
+              ],
+              snack: ["Apple slices with peanut butter", "Carrot sticks"],
+              dinner: [
+                "Baked salmon",
+                "Steamed broccoli and asparagus",
+                "Small sweet potato",
+              ],
+            },
+            vegetarian: {
+              breakfast: [
+                "Greek yogurt with chia seeds and berries",
+                "Whole grain toast",
+                "Green tea",
+              ],
+              lunch: [
+                "Chickpea salad with quinoa",
+                "Mixed greens with olive oil",
+                "Herbal tea",
+              ],
+              snack: ["Hummus with cucumber slices", "Handful of almonds"],
+              dinner: [
+                "Lentil soup",
+                "Roasted vegetables",
+                "Brown rice (small portion)",
+              ],
+            },
+            vegan: {
+              breakfast: [
+                "Smoothie bowl with banana, spinach, and flax seeds",
+                "Whole grain toast with avocado",
+              ],
+              lunch: [
+                "Buddha bowl with tofu, quinoa, and roasted vegetables",
+                "Lemon tahini dressing",
+              ],
+              snack: ["Mixed nuts", "Fresh fruit"],
+              dinner: ["Black bean and vegetable stir-fry", "Cauliflower rice"],
+            },
+          },
+          "muscle-gain": {
+            balanced: {
+              breakfast: [
+                "4 eggs (scrambled)",
+                "Whole grain toast",
+                "Banana",
+                "Protein shake",
+              ],
+              lunch: [
+                "Grilled chicken breast (200g)",
+                "Brown rice",
+                "Mixed vegetables",
+                "Avocado",
+              ],
+              snack: ["Greek yogurt with granola", "Protein bar", "Apple"],
+              dinner: [
+                "Lean beef steak",
+                "Sweet potato",
+                "Green beans",
+                "Side salad",
+              ],
+            },
+            vegetarian: {
+              breakfast: [
+                "Paneer scramble with vegetables",
+                "Whole grain bread",
+                "Banana smoothie with protein powder",
+              ],
+              lunch: ["Tofu stir-fry with quinoa", "Mixed bean salad", "Nuts"],
+              snack: ["Greek yogurt parfait", "Protein balls", "Fruits"],
+              dinner: ["Lentil curry", "Brown rice", "Cottage cheese salad"],
+            },
+          },
+          maintenance: {
+            balanced: {
+              breakfast: [
+                "Whole grain cereal with milk",
+                "Banana",
+                "Boiled eggs",
+                "Orange juice",
+              ],
+              lunch: ["Grilled chicken wrap", "Mixed salad", "Fruit"],
+              snack: ["Trail mix", "Yogurt"],
+              dinner: ["Baked fish", "Roasted vegetables", "Quinoa"],
+            },
+            mediterranean: {
+              breakfast: [
+                "Greek yogurt with honey and walnuts",
+                "Whole grain toast with olive oil",
+                "Fresh figs",
+              ],
+              lunch: [
+                "Greek salad with feta",
+                "Grilled sardines",
+                "Whole grain pita",
+              ],
+              snack: ["Olives and cherry tomatoes", "Handful of almonds"],
+              dinner: [
+                "Herb-crusted cod",
+                "Roasted vegetables with olive oil",
+                "Couscous",
+              ],
+            },
+          },
+          "healthy-lifestyle": {
+            balanced: {
+              breakfast: [
+                "Smoothie with mixed berries, banana, and spinach",
+                "Whole grain toast with almond butter",
+              ],
+              lunch: [
+                "Mixed grain bowl with grilled vegetables and chickpeas",
+                "Light vinaigrette",
+              ],
+              snack: ["Fresh fruit", "Handful of nuts"],
+              dinner: [
+                "Grilled chicken or fish",
+                "Large salad",
+                "Steamed vegetables",
+              ],
+            },
+            keto: {
+              breakfast: ["Bacon and eggs", "Avocado", "Bulletproof coffee"],
+              lunch: [
+                "Chicken Caesar salad (no croutons)",
+                "Olive oil dressing",
+              ],
+              snack: ["Cheese cubes", "Macadamia nuts"],
+              dinner: [
+                "Ribeye steak",
+                "Buttered broccoli",
+                "Side salad with ranch",
+              ],
+            },
+          },
+        };
+
+        // Fallbacks remain same
+        const selectedPlan =
+          plans[goal]?.[preference] ||
+          plans[goal]?.["balanced"] ||
+          plans["healthy-lifestyle"]["balanced"];
+
+        // Calories: prefer override, then last TDEE adapted to goal, else default table
+        const defaultCalories = {
+          sedentary: {
+            "weight-loss": 1500,
+            "muscle-gain": 2200,
+            maintenance: 2000,
+            "healthy-lifestyle": 1800,
+          },
+          light: {
+            "weight-loss": 1700,
+            "muscle-gain": 2500,
+            maintenance: 2200,
+            "healthy-lifestyle": 2000,
+          },
+          moderate: {
+            "weight-loss": 1900,
+            "muscle-gain": 2800,
+            maintenance: 2400,
+            "healthy-lifestyle": 2200,
+          },
+          active: {
+            "weight-loss": 2100,
+            "muscle-gain": 3200,
+            maintenance: 2700,
+            "healthy-lifestyle": 2500,
+          },
+        };
+
+        let baseCalories;
+        if (
+          !isNaN(calorieOverride) &&
+          calorieOverride >= 1000 &&
+          calorieOverride <= 5000
+        ) {
+          baseCalories = calorieOverride;
+        } else if (stored.lastTDEE) {
+          const adjust =
+            goal === "weight-loss" ? -400 : goal === "muscle-gain" ? 300 : 0;
+          baseCalories = Math.max(
+            1200,
+            Math.min(4500, stored.lastTDEE + adjust)
+          );
+        } else {
+          baseCalories = defaultCalories[activity][goal];
+        }
+        const targetCalories = Math.round(baseCalories);
+
+        // Macro percentages
+        const proteinPercent =
+          goal === "muscle-gain" ? 35 : goal === "weight-loss" ? 30 : 25;
+        const carbPercent =
+          preference === "keto" ? 10 : goal === "muscle-gain" ? 45 : 40;
+        const fatPercent = 100 - proteinPercent - carbPercent;
+
+        // Macro grams (4 kcal/g protein & carbs, 9 kcal/g fat)
+        const proteinGrams = Math.round(
+          (targetCalories * proteinPercent) / 100 / 4
+        );
+        const carbGrams = Math.round((targetCalories * carbPercent) / 100 / 4);
+        const fatGrams = Math.round((targetCalories * fatPercent) / 100 / 9);
+
+        // Optional snack removal
+        const includeSnack = $("includeSnack").value === "yes";
+        const renderMealSection = (title, items) => {
+          if (!items || items.length === 0) return "";
+          return `
+                    <div class="meal-card">
+                        <h4>${title}</h4>
+                        <ul>${items
+                          .map((item) => `<li>${item}</li>`)
+                          .join("")}</ul>
+                    </div>
+                `;
+        };
+
+        const planHTML = `
+                <div class="meal-plan">
+                    <div class="plan-header">
+                        <h3>Your Personalized Plan</h3>
+                        <div class="plan-meta">${goal
+                          .replace("-", " ")
+                          .toUpperCase()} • ${preference.toUpperCase()} • ${activity.toUpperCase()}</div>
+                    </div>
+                    ${renderMealSection("🌅 Breakfast", selectedPlan.breakfast)}
+                    ${renderMealSection("🍽️ Lunch", selectedPlan.lunch)}
+                    ${
+                      includeSnack
+                        ? renderMealSection("🥤 Snack", selectedPlan.snack)
+                        : ""
+                    }
+                    ${renderMealSection("🌙 Dinner", selectedPlan.dinner)}
+                    <div class="nutrition-summary">
+                        <h4>Daily Nutrition Goals</h4>
+                        <div class="nutrition-grid">
+                            <div class="nutrition-item">
+                                <strong>${targetCalories}</strong>
+                                <span>Calories</span>
+                            </div>
+                            <div class="nutrition-item">
+                                <strong>${proteinPercent}% • ${proteinGrams}g</strong>
+                                <span>Protein</span>
+                            </div>
+                            <div class="nutrition-item">
+                                <strong>${carbPercent}% • ${carbGrams}g</strong>
+                                <span>Carbs</span>
+                            </div>
+                            <div class="nutrition-item">
+                                <strong>${fatPercent}% • ${fatGrams}g</strong>
+                                <span>Fat</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        $("planDisplay").innerHTML = planHTML;
+        persistPrefs();
+      }
+      window.generatePlan = generatePlan;
+
+      // Print / Share
+      function printPlan() {
+        window.print();
+      }
+      window.printPlan = printPlan;
+
+      async function sharePlan() {
+        const shareData = {
+          title: "My Nourish Plan",
+          text: "Check out my personalized diet plan from Nourish!",
+          url: location.href,
+        };
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            await navigator.clipboard.writeText(shareData.url);
+            alert("Link copied to clipboard.");
+          }
+        } catch (e) {
+          alert("Unable to share at the moment.");
+        }
+      }
+      window.sharePlan = sharePlan;
+
+      // Persist preferences
+      function persistPrefs() {
+        const prefs = getStoredPrefs();
+        prefs.unitSystem = $("unitSystem").value;
+        prefs.weight = $("weight").value;
+        prefs.height = $("height").value;
+        prefs.age = $("age").value;
+        prefs.sex = $("sex").value;
+        prefs.activity = $("activity").value;
+        prefs.goal = $("goal").value;
+        prefs.preference = $("preference").value;
+        prefs.mealsPerDay = $("mealsPerDay").value;
+        prefs.includeSnack = $("includeSnack").value;
+        prefs.calorieOverride = $("calorieOverride").value;
+        setStoredPrefs(prefs);
+      }
+
+      function restorePrefs() {
+        const prefs = getStoredPrefs();
+        if (prefs.unitSystem) $("unitSystem").value = prefs.unitSystem;
+        if (prefs.weight) $("weight").value = prefs.weight;
+        if (prefs.height) $("height").value = prefs.height;
+        if (prefs.age) $("age").value = prefs.age;
+        if (prefs.sex) $("sex").value = prefs.sex;
+        if (prefs.activity) $("activity").value = prefs.activity;
+        if (prefs.goal) $("goal").value = prefs.goal;
+        if (prefs.preference) $("preference").value = prefs.preference;
+        if (prefs.mealsPerDay) $("mealsPerDay").value = prefs.mealsPerDay;
+        if (prefs.includeSnack) $("includeSnack").value = prefs.includeSnack;
+        if (prefs.calorieOverride)
+          $("calorieOverride").value = prefs.calorieOverride;
+        // Trigger unit label sync
+        unitSystemEl.dispatchEvent(new Event("change"));
+      }
+
+      [
+        "unitSystem",
+        "weight",
+        "height",
+        "age",
+        "sex",
+        "activity",
+        "goal",
+        "preference",
+        "mealsPerDay",
+        "includeSnack",
+        "calorieOverride",
+      ].forEach((id) => {
+        const el = $(id);
+        if (el) el.addEventListener("change", persistPrefs);
+        if (el && el.tagName === "INPUT")
+          el.addEventListener("input", persistPrefs);
+      });
+
+      // Footer year
+      $("year").textContent = new Date().getFullYear();
+
+      // Initial restore
+      restorePrefs();
+
+      // Journal persistence
+      const JOURNAL_KEY = "nourish_journal_v1";
+      const journalDateEl = $("journalDate");
+      const clearDayBtn = $("clearDayBtn");
+      const dailyTotalBadge = $("dailyTotalBadge");
+
+      function todayStr() {
+        const d = new Date();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${d.getFullYear()}-${m}-${day}`;
+      }
+
+      function getJournal() {
+        try {
+          return JSON.parse(localStorage.getItem(JOURNAL_KEY) || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function setJournal(data) {
+        localStorage.setItem(JOURNAL_KEY, JSON.stringify(data));
+      }
+
+      function getDayData(dateStr) {
+        const j = getJournal();
+        return (
+          j[dateStr] || { breakfast: [], lunch: [], snack: [], dinner: [] }
+        );
+      }
+
+      function setDayData(dateStr, dayData) {
+        const j = getJournal();
+        j[dateStr] = dayData;
+        setJournal(j);
+      }
+
+      function mealContainer(meal) {
+        return document.querySelector(`.journal-card[data-meal="${meal}"]`);
+      }
+
+      function renderMeal(meal, items) {
+        const container = mealContainer(meal);
+        if (!container) return;
+        const list = container.querySelector(".meal-list");
+        list.innerHTML = "";
+        let total = 0;
+        items.forEach((it, idx) => {
+          const li = document.createElement("li");
+          li.className = "meal-item";
+          const kcal = Number(it.c || 0);
+          total += isNaN(kcal) ? 0 : kcal;
+          li.innerHTML = `
+                    <div>
+                        <div>${it.t || ""}</div>
+                        <div class="meta">${
+                          kcal ? `${kcal} kcal` : "kcal —"
+                        }</div>
+                    </div>
+                    <button class="delete-btn" data-index="${idx}" aria-label="Remove item">Remove</button>
+                `;
+          list.appendChild(li);
+        });
+        container.querySelector(".meal-total").textContent = `${total} kcal`;
+      }
+
+      function renderDay(dateStr) {
+        const data = getDayData(dateStr);
+        ["breakfast", "lunch", "snack", "dinner"].forEach((meal) =>
+          renderMeal(meal, data[meal] || [])
+        );
+        const dayTotal = ["breakfast", "lunch", "snack", "dinner"]
+          .map((meal) =>
+            (data[meal] || []).reduce((s, it) => s + (Number(it.c) || 0), 0)
+          )
+          .reduce((a, b) => a + b, 0);
+        dailyTotalBadge.textContent = `Total: ${dayTotal} kcal`;
+      }
+
+      function addMealItem(meal, text, kcal) {
+        const dateStr = journalDateEl.value || todayStr();
+        const day = getDayData(dateStr);
+        day[meal] = day[meal] || [];
+        if (text.trim().length === 0 && (!kcal || Number(kcal) <= 0)) return;
+        day[meal].push({ t: text.trim(), c: Number(kcal) || 0 });
+        setDayData(dateStr, day);
+        renderDay(dateStr);
+      }
+
+      function removeMealItem(meal, index) {
+        const dateStr = journalDateEl.value || todayStr();
+        const day = getDayData(dateStr);
+        day[meal].splice(index, 1);
+        setDayData(dateStr, day);
+        renderDay(dateStr);
+      }
+
+      function bindMealCard(card) {
+        const meal = card.getAttribute("data-meal");
+        const [textInput, kcalInput] =
+          card.querySelectorAll(".meal-inputs input");
+        const addBtn = card.querySelector(".add-meal");
+        const list = card.querySelector(".meal-list");
+        addBtn.addEventListener("click", () => {
+          addMealItem(meal, textInput.value || "", kcalInput.value || "");
+          textInput.value = "";
+          kcalInput.value = "";
+          textInput.focus();
+        });
+        textInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            addBtn.click();
+          }
+        });
+        kcalInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            addBtn.click();
+          }
+        });
+        list.addEventListener("click", (e) => {
+          const btn = e.target.closest(".delete-btn");
+          if (btn) {
+            const idx = Number(btn.dataset.index);
+            if (!isNaN(idx)) removeMealItem(meal, idx);
+          }
+        });
+      }
+
+      // Initialize journal UI
+      document.querySelectorAll(".journal-card").forEach(bindMealCard);
+      journalDateEl.value = todayStr();
+      journalDateEl.addEventListener("change", () =>
+        renderDay(journalDateEl.value)
+      );
+      clearDayBtn.addEventListener("click", () => {
+        const dateStr = journalDateEl.value || todayStr();
+        if (confirm("Clear all entries for this day?")) {
+          setDayData(dateStr, {
+            breakfast: [],
+            lunch: [],
+            snack: [],
+            dinner: [],
+          });
+          renderDay(dateStr);
+        }
+      });
+      renderDay(journalDateEl.value);
+
+      // Guided Breathing
+      const breathCircle = $("breathCircle");
+      const breathInstruction = $("breathInstruction");
+      const breathStart = $("breathStart");
+      const breathStop = $("breathStop");
+      const breathStats = $("breathStats");
+      const breathModeButtons = Array.from(
+        document.querySelectorAll(".breath-mode")
+      );
+
+      let breathRunning = false;
+      let breathCycleCount = 0;
+      let breathTimers = [];
+      let currentEasyPattern = "3-3"; // inhale-exhale seconds
+
+      function clearBreathTimers() {
+        breathTimers.forEach((t) => clearTimeout(t));
+        breathTimers = [];
+      }
+
+      function setInstruction(text) {
+        breathInstruction.textContent = text;
+      }
+
+      function schedule(fn, delay) {
+        const id = setTimeout(fn, delay);
+        breathTimers.push(id);
+      }
+
+      function runBreathingCycle() {
+        if (!breathRunning) return;
+        const [inhale, exhale] = currentEasyPattern
+          .split("-")
+          .map((n) => parseInt(n, 10));
+
+        const ms = (n) => n * 1000;
+
+        // Inhale
+        setInstruction("Inhale…");
+        breathCircle.style.transition = `transform ${inhale}s ease-in-out`;
+        breathCircle.style.transform = "scale(1.25)";
+
+        let t = 0;
+        t += ms(inhale);
+
+        // Exhale
+        schedule(() => {
+          if (!breathRunning) return;
+          setInstruction("Exhale…");
+          breathCircle.style.transition = `transform ${exhale}s ease-in-out`;
+          breathCircle.style.transform = "scale(1)";
+        }, t);
+        t += ms(exhale);
+
+        // Loop
+        schedule(() => {
+          if (!breathRunning) return;
+          breathCycleCount += 1;
+          breathStats.textContent = `Session: ${breathCycleCount} ${
+            breathCycleCount === 1 ? "cycle" : "cycles"
+          }`;
+          runBreathingCycle();
+        }, t);
+      }
+
+      // Mode selection
+      function setActiveMode(btn) {
+        breathModeButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+      breathModeButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentEasyPattern = btn.dataset.pattern; // e.g., "2-4"
+          setActiveMode(btn);
+          const [i, e] = currentEasyPattern.split("-");
+          setInstruction(`Selected ${i}-${e}. Press Start`);
+        });
+      });
+
+      // Default select middle button if exists
+      if (breathModeButtons[1]) {
+        setActiveMode(breathModeButtons[1]);
+      }
+
+      breathStart.addEventListener("click", () => {
+        if (breathRunning) return;
+        breathRunning = true;
+        breathCycleCount = 0;
+        breathStats.textContent = "Session: 0 cycles";
+        setInstruction("Get ready…");
+        clearBreathTimers();
+        // small delay before starting
+        schedule(runBreathingCycle, 400);
+      });
+
+      breathStop.addEventListener("click", () => {
+        breathRunning = false;
+        clearBreathTimers();
+        setInstruction("Paused. Press Start to continue");
+      });
+    </script>
+  </body>
+</html>
