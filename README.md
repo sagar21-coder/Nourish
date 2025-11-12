@@ -52,6 +52,13 @@ Include AI meal recommendations
 
 Add dark mode toggle
 
+📞 Contact
+
+Created with 💚 by [Sagar Ahirrao]
+📧 Email: sagarahirrao111@gmail.com
+
+🌐 Portfolio: https://sagar21-coder.github.io/Nourish/
+
 
 
 
